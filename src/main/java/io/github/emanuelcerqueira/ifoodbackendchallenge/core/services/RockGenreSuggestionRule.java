@@ -13,7 +13,7 @@ public class RockGenreSuggestionRule implements GenreSuggestionRule {
 
     @Override
     public boolean isTemperatureSuitableToMusicGenre(Double temperature) {
-        return temperature>= 10 && temperature < 15;
+        return temperature.intValue() >= 10 && temperature.intValue() <= 14;
     }
 
 }

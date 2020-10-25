@@ -13,7 +13,7 @@ public class PartyGenreSuggestionRule implements GenreSuggestionRule {
 
     @Override
     public boolean isTemperatureSuitableToMusicGenre(Double temperature) {
-        return temperature > 30;
+        return temperature.intValue() > 30;
     }
 
 }

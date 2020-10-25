@@ -13,7 +13,7 @@ public class PopGenreSuggestionRule implements GenreSuggestionRule {
 
     @Override
     public boolean isTemperatureSuitableToMusicGenre(Double temperature) {
-        return temperature >= 15 && temperature <= 30;
+        return temperature.intValue() >= 15 && temperature.intValue() <= 30;
     }
 
 }

@@ -13,6 +13,6 @@ public class ClassicalGenreSuggestionRule implements GenreSuggestionRule {
 
     @Override
     public boolean isTemperatureSuitableToMusicGenre(Double temperature) {
-        return temperature < 10;
+        return temperature.intValue() < 10;
     }
 }
