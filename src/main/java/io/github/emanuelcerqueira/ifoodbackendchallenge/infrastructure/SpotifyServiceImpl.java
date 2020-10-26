@@ -26,29 +26,22 @@ public class SpotifyServiceImpl implements SpotifyService {
     @Value("${spotify.api-base-url}")
     private String spotifyApiBaseUrl;
 
+    private String playlistName;
+
+    private String playlistHref;
+
     public SpotifyServiceImpl(RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
     }
 
     @Override
     public Playlist findPlaylistByMusicGenre(MusicGenre musicGenre) {
-        Optional<Map<String, String>> optionalPlaylistNameAndTracksRequestUrl = getFirstPlaylistNameAndTracksRequestUrlByMusicGenre(musicGenre);
 
-        if (optionalPlaylistNameAndTracksRequestUrl.isPresent()) {
-            Map<String, String> playlistNameAndTracksRequestUrl = optionalPlaylistNameAndTracksRequestUrl.get();
-            String playlistName = playlistNameAndTracksRequestUrl.get("playlistName");
-            String playlistHref = playlistNameAndTracksRequestUrl.get("playlistHref");
-            String playlistTracksUrlRequest = getTracksRequestUrlByPlaylistHref(playlistHref);
+        setPlaylistNameAndPlaylistHrefByMusicGenre(musicGenre);
+        String playlistTracksUrlRequest = getTracksRequestUrlByPlaylistHref(this.playlistHref);
+        List<String> songs = getSongsByPlaylistTracksUrlRequest(playlistTracksUrlRequest);
 
-            return new Playlist(playlistName, musicGenre, getSongsByPlaylistTracksUrlRequest(playlistTracksUrlRequest));
-        }
-        else {
-            // TODO: Throw a exception
-        }
-
-
-
-        return null;
+        return new Playlist(this.playlistName, musicGenre, songs);
     }
 
     private List<String> getSongsByPlaylistTracksUrlRequest(String playlistTracksUrlRequest) {
@@ -73,7 +66,6 @@ public class SpotifyServiceImpl implements SpotifyService {
                     JsonNode artistsNode = trackNode.get("album").get("artists");
                     String artistName = artistsNode.get(0).get("name").textValue();
 
-
                     songs.add(artistName + " - "+trackName);
                 });
 
@@ -86,8 +78,7 @@ public class SpotifyServiceImpl implements SpotifyService {
 
     }
 
-    private Optional<Map<String, String>> getFirstPlaylistNameAndTracksRequestUrlByMusicGenre(MusicGenre musicGenre) {
-        Map<String, String> firstPlaylistNameAndTracksRequestUrl = new HashMap<>();
+    private void setPlaylistNameAndPlaylistHrefByMusicGenre(MusicGenre musicGenre) {
         HttpEntity request = new HttpEntity(getSpotifyRequestHttpHeaders());
         ResponseEntity<String> response =
                 restTemplate.exchange(getRequestUrlSpotifyBySearch(musicGenre.getDescription()), HttpMethod.GET, request, String.class);
@@ -98,13 +89,9 @@ public class SpotifyServiceImpl implements SpotifyService {
             try {
                 final ObjectNode node = new ObjectMapper().readValue(responseJson, ObjectNode.class);
                 final JsonNode arrNode = node.get("playlists").get("items");
-                String playlistHref = arrNode.get(0).get("href").textValue();
-                String playlistName = arrNode.get(0).get("name").textValue();
+                this.playlistHref = arrNode.get(0).get("href").textValue();
+                this.playlistName = arrNode.get(0).get("name").textValue();
 
-                firstPlaylistNameAndTracksRequestUrl.put("playlistName", playlistName);
-                firstPlaylistNameAndTracksRequestUrl.put("playlistHref", playlistHref);
-
-                return Optional.ofNullable(firstPlaylistNameAndTracksRequestUrl);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
@@ -112,7 +99,6 @@ public class SpotifyServiceImpl implements SpotifyService {
         } else {
             // TODO: Throw a exception
         }
-        return Optional.empty();
     }
 
     private String getRequestUrlSpotifyBySearch(String search) {
