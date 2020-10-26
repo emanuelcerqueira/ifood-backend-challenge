@@ -12,10 +12,10 @@ git clone https://github.com/emanuelcerqueira/ifood-backend-challenge.git
 ./mvnw package
 ``
 ##### 3. Get Spotify and OpenWheatherMap API keys and fill in the .env file
-``
+```
 SPOTIFY_API_KEY=your_spotify_api_key
 OPENWEATHERMAP_API_KEY=your_openweathermap_api_key
-`` 
+```
 
 ##### 4. Build and run image
 ``
