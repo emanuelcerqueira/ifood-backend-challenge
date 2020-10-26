@@ -1,7 +1,27 @@
 # iFood Back-end Challenge
 
 ## How to run
-TODO
+
+##### 1. Clone the project
+``
+git clone https://github.com/emanuelcerqueira/ifood-backend-challenge.git
+``
+
+##### 2. Build the project
+``
+./mvnw package
+``
+##### 3. Get Spotify and OpenWheatherMap API keys and fill in the .env file
+``
+SPOTIFY_API_KEY=your_spotify_api_key
+OPENWEATHERMAP_API_KEY=your_openweathermap_api_key
+`` 
+
+##### 4. Build and run image
+``
+docker-compose up --build
+``
+
 ## Examples of API Calls
 ```
 GET http://localhost:8080/api/playlist-suggestion/by-name?name=Portugal
